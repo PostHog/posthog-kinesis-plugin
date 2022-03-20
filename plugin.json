@@ -1,0 +1,41 @@
+{
+    "name": "Kinesis",
+    "url": "TODO",
+    "description": "Import events to Posthog from a Kinesis Stream.",
+    "main": "index.ts",
+    "config": [
+        {
+            "key": "kinesisStreamName",
+            "hint": "Kinesis Stream to read from",
+            "name": "Kinesis Stream Name",
+            "type": "string",
+            "default": "",
+            "required": true
+        },
+        {
+            "key": "iamAccessKeyId",
+            "hint": "Access Key ID of an AWS IAM able to read from a Kinesis Stream",
+            "name": "Access Key ID",
+            "type": "string",
+            "default": "",
+            "required": true
+        },
+        {
+            "key": "iamSecretAccessKey",
+            "hint": "Secret Access Key of an AWS IAM able to read from a Kinesis Stream",
+            "name": "Secret Access Key",
+            "type": "string",
+            "default": "",
+            "required": true,
+            "secret": true
+        },
+        {
+            "key": "awsRegion",
+            "hint": "Kinesis Stream AWS region",
+            "name": "AWS Region",
+            "type": "string",
+            "default": "",
+            "required": true
+        }
+    ]
+}
