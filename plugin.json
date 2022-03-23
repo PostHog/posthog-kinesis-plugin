@@ -1,12 +1,15 @@
 {
-    "name": "Kinesis",
+    "name": "AWS Kinesis",
     "url": "TODO",
-    "description": "Import events to Posthog from a Kinesis Stream.",
+    "description": "Import events to Posthog from a AWS Kinesis Stream.",
     "main": "index.ts",
     "config": [
         {
+            "markdown": "Provide an AccessKeyID and a SecretAccessKey for a AWS IAM user with at least the following Kinesis Action rights:`DescribeStream`, `GetShardIterator`, `GetRecords`"
+        },
+        {
             "key": "kinesisStreamName",
-            "hint": "Kinesis Stream to read from",
+            "hint": "AWS Kinesis Stream to read from",
             "name": "Kinesis Stream Name",
             "type": "string",
             "default": "",
