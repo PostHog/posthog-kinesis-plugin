@@ -7,7 +7,8 @@
     "license": "MIT",
     "dependencies": {
         "@types/node-fetch": "^2.6.1",
-        "aws-sdk": "^2.1095.0"
+        "aws-sdk": "^2.1095.0",
+        "posthog-js": "^1.18.0"
     },
     "scripts": {
         "test": "jest .",

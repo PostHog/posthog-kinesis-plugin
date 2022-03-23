@@ -36,6 +36,22 @@
             "type": "string",
             "default": "",
             "required": true
+        },
+        {
+            "key": "eventKey",
+            "hint": "The Kinesis Record key to be mapped to the PostHog event name. Can be nested (e.g. `properties.eventName`)",
+            "name": "Posthog event key",
+            "type": "string",
+            "default": "",
+            "required": true
+        },
+        {
+            "key": "additionalPropertyMappings",
+            "hint": "A comma-separated mapping of additional Kinesis Record keys to map to Posthog event properties. Can be nested (e.g. `properties.kinesisPropertyKey:posthogPropertyKey`)",
+            "name": "Additional Kinesis to Posthog property mappings",
+            "type": "string",
+            "default": "",
+            "required": false
         }
     ]
 }
