@@ -32,6 +32,8 @@ export async function setupPlugin({ config, global }: KinesisMeta): Promise<void
 }
 
 export async function runEveryMinute(meta: KinesisMeta): Promise<void> {
+    // here we don't actually need a job - I recommend jobs when we're doing e.g. onEvent which are part of the ingestion path
+    // runEveryMinute is an async operation anyway so no need to trigger another one
     meta.jobs.readKinesisStream({}).runNow()
 }
 
@@ -49,7 +51,10 @@ export const jobs = {
                     console.error(err, err.stack)
                 } else {
                     // kinesis streams are composed of shards, we need to process each shard independently
-                    streamData.StreamDescription.Shards.forEach((shard) => processShard(meta, shard, startedAt))
+                    
+                    // should we maybe do something like await Promise.all here given processShard is async or this a deliberate "void"?
+                    streamData.StreamDescription.Shards.forEach((shard) => processShard(meta, shard, startedAt)) 
+                
                 }
             }
         )
