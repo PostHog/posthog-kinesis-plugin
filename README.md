@@ -4,8 +4,8 @@
 
 This plugins sends event data to Posthog from a Kinesis Stream.
 
-
 ## Record schema
+
 Kinesis Records must be delivered in a JSON schema.
 
 You need to configure an `eventKey` that maps to the event name in Posthog. The `eventKey` can refer to a nested key.
@@ -46,6 +46,7 @@ This will be parsed as:
 ```
 
 ## IAM policy
+
 You need to provide an AccessKeyID and a SecretAccessKey for a AWS IAM user with at least the following Kinesis Action rights:
 
 ```

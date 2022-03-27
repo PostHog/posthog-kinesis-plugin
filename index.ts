@@ -32,28 +32,26 @@ export async function setupPlugin({ config, global }: KinesisMeta): Promise<void
 }
 
 export async function runEveryMinute(meta: KinesisMeta): Promise<void> {
-    meta.jobs.readKinesisStream({}).runNow()
+    readKinesisStream(meta)
 }
 
-export const jobs = {
-    readKinesisStream: (_: unknown, meta: KinesisMeta): void => {
-        const { global, config } = meta
-        // we keep track of the starting time of the process, to only poll kinesis for one minute before restarting
-        const startedAt = new Date().getTime()
-        global.kinesis.describeStream(
-            {
-                StreamName: config.kinesisStreamName,
-            },
-            function (err, streamData) {
-                if (err) {
-                    console.error(err, err.stack)
-                } else {
-                    // kinesis streams are composed of shards, we need to process each shard independently
-                    streamData.StreamDescription.Shards.forEach((shard) => processShard(meta, shard, startedAt))
-                }
+function readKinesisStream(meta: KinesisMeta): void {
+    const { global, config } = meta
+    // we keep track of the starting time of the process, to only poll kinesis for one minute before restarting
+    const startedAt = new Date().getTime()
+    global.kinesis.describeStream(
+        {
+            StreamName: config.kinesisStreamName,
+        },
+        function (err, streamData) {
+            if (err) {
+                console.error(err, err.stack)
+            } else {
+                // kinesis streams are composed of shards, we need to process each shard independently
+                streamData.StreamDescription.Shards.forEach((shard) => processShard(meta, shard, startedAt))
             }
-        )
-    },
+        }
+    )
 }
 
 // we need to iterate through the sequences inside of a shard, to do that we required a shard iterator
