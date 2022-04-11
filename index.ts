@@ -47,6 +47,8 @@ function readKinesisStream(meta: KinesisMeta): void {
             if (err) {
                 console.error(err, err.stack)
             } else {
+                // processShard is actually what should be a job. there can be hundreds of shards and we might not be able to process all within 30sec (timeout limit)
+                
                 // kinesis streams are composed of shards, we need to process each shard independently
                 streamData.StreamDescription.Shards.forEach((shard) => processShard(meta, shard, startedAt))
             }
@@ -71,13 +73,13 @@ function getShardIterator(
         function (err, shardIteratordata) {
             if (err) {
                 console.error(err, err.stack)
+                return
+            }
+            const { ShardIterator } = shardIteratordata
+            if (ShardIterator) {
+                callback(ShardIterator)
             } else {
-                const { ShardIterator } = shardIteratordata
-                if (ShardIterator) {
-                    callback(ShardIterator)
-                } else {
-                    console.error('ShardIterator is not defined')
-                }
+                console.error('ShardIterator is not defined')
             }
         }
     )
@@ -196,7 +198,7 @@ function decodeBuffer(data: Kinesis.Record['Data']) {
         const payload = Buffer.from(data).toString()
         return JSON.parse(payload)
     } catch (e) {
-        console.error(`Failed decoding Buffer, skipping record: ${e}`)
+        console.error(`Failed decoding Buffer, skipping record: ${e.message || String(e)}`)
         return null
     }
 }
