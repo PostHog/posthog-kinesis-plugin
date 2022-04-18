@@ -31,6 +31,10 @@ export async function setupPlugin({ config, global }: KinesisMeta): Promise<void
     })
 }
 
+export const jobs = {
+    processShard,
+}
+
 export async function runEveryMinute(meta: KinesisMeta): Promise<void> {
     readKinesisStream(meta)
 }
@@ -48,7 +52,7 @@ function readKinesisStream(meta: KinesisMeta): void {
                 console.error(err, err.stack)
             } else {
                 // kinesis streams are composed of shards, we need to process each shard independently
-                streamData.StreamDescription.Shards.forEach((shard) => processShard(meta, shard, startedAt))
+                streamData.StreamDescription.Shards.forEach((shard) => meta.jobs.processShard({ shard, startedAt }))
             }
         }
     )
@@ -71,20 +75,23 @@ function getShardIterator(
         function (err, shardIteratordata) {
             if (err) {
                 console.error(err, err.stack)
+                return
+            }
+            const { ShardIterator } = shardIteratordata
+            if (ShardIterator) {
+                callback(ShardIterator)
             } else {
-                const { ShardIterator } = shardIteratordata
-                if (ShardIterator) {
-                    callback(ShardIterator)
-                } else {
-                    console.error('ShardIterator is not defined')
-                }
+                console.error('ShardIterator is not defined')
             }
         }
     )
 }
 
 // we check if we already have a shardIterator in cache, otherwise we get one and use it to get records at a specific sequence
-async function processShard({ config, global, cache }: KinesisMeta, shard: Kinesis.Shard, startedAt: number) {
+async function processShard(
+    { shard, startedAt }: { shard: Kinesis.Shard; startedAt: number },
+    { config, global, cache }: KinesisMeta
+): Promise<void> {
     const shardId = shard.ShardId
     const cacheKey = `${REDIS_KINESIS_STREAM_KEY}${config.kinesisStreamName}_${shard.ShardId}`
     const nextShardIterator = (await cache.get(cacheKey, null)) as string | null
@@ -195,8 +202,8 @@ function decodeBuffer(data: Kinesis.Record['Data']) {
         //@ts-expect-error Kinesis Record is Uint8Array but it's not correctly typed
         const payload = Buffer.from(data).toString()
         return JSON.parse(payload)
-    } catch (e) {
-        console.error(`Failed decoding Buffer, skipping record: ${e}`)
+    } catch (e: any) {
+        console.error(`Failed decoding Buffer, skipping record: ${e.message || String(e)}`)
         return null
     }
 }
