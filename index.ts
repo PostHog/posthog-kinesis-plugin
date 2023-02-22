@@ -19,7 +19,7 @@ type KinesisPlugin = Plugin<{
     }
 }>
 
-type KinesisMeta = PluginMeta<KinesisPlugin>
+export type KinesisMeta = PluginMeta<KinesisPlugin>
 
 const REDIS_KINESIS_STREAM_KEY = '_kinesis_shard_'
 
@@ -52,7 +52,9 @@ function readKinesisStream(meta: KinesisMeta): void {
                 console.error(err, err.stack)
             } else {
                 // kinesis streams are composed of shards, we need to process each shard independently
-                streamData.StreamDescription.Shards.forEach((shard) => meta.jobs.processShard({ shard, startedAt }))
+                streamData.StreamDescription.Shards.forEach((shard) =>
+                    meta.jobs.processShard({ shard, startedAt }).runNow()
+                )
             }
         }
     )
