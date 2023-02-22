@@ -1,9 +1,9 @@
 module.exports = {
+    testEnvironment: 'node',
     preset: 'ts-jest',
-    moduleDirectories: ['node_modules', 'src'],
     transform: {
-        '^.+\\.(ts|tsx)?$': 'ts-jest',
-        '^.+\\.(js|jsx)$': 'babel-jest',
+        '^.+\\.ts$': ['ts-jest', { isolatedModules: true }],
     },
-    transformIgnorePatterns: [],
+    testMatch: ['**/*.test.ts'],
+    watchPathIgnorePatterns: ['<rootDir>/node_modules', '<rootDir>/volume'],
 }

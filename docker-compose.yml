@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+    localstack:
+        container_name: '${LOCALSTACK_DOCKER_NAME-localstack_main}'
+        image: localstack/localstack
+        ports:
+            - '4566:4566' # LocalStack Gateway
+        environment:
+            - DEBUG=${DEBUG-}
+            - DOCKER_HOST=unix:///var/run/docker.sock
+            - SERVICES=kinesis
+            - EAGER_SERVICE_LOADING=1
+        volumes:
+            - '${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack'
+            - '/var/run/docker.sock:/var/run/docker.sock'
+
+    redis:
+        image: redis:6.2.6-bullseye
+        ports:
+            - '6379:6379'

@@ -17,3 +17,6 @@ yalc*
 
 # macOS
 .DS_Store
+
+# Added by LocalStack
+volume/
